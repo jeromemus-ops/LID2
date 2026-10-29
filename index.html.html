@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulateur ROI & Business Plan - Lightinderm Pro</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for robust UI icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            lightinderm: {
+              black: '#111111',
+              dark: '#222222',
+              gray: '#666666',
+              lightGray: '#F3F4F6',
+              border: '#E5E7EB',
+              pink: '#E6007E'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media print {
+      body { background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+      .print-shadow-none { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  </style>
+</head>
+
+<body class="h-full font-sans text-slate-800 antialiased selection:bg-slate-900 selection:text-white">
+
+  <div id="app" class="min-h-screen flex flex-col justify-between">
+    
+    <!-- HEADER BRANDING -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        
+        <!-- LOGO LIGHTINDERM EXACT -->
+        <div class="flex flex-col items-center md:items-start">
+          <div class="flex items-baseline tracking-tight">
+            <span class="text-3xl font-extrabold text-black tracking-tighter">light</span>
+            <span class="text-3xl font-normal text-slate-500 tracking-tighter">inderm</span>
+          </div>
+          <span class="text-[10px] uppercase tracking-[0.28em] text-slate-600 font-medium -mt-1">
+            REGENERATIVE SKIN CARE
+          </span>
+        </div>
+
+        <!-- TITLE & SUBTITLE -->
+        <div class="text-center md:text-left border-t md:border-t-0 md:border-l border-slate-200 md:pl-6 pt-2 md:pt-0">
+          <h1 class="text-lg font-semibold text-slate-900 tracking-tight">SIMULATEUR DE RENTABILITÉ & ROI</h1>
+          <p class="text-xs text-slate-500">Calculateur d'implantation, revente domicile & prestations cabine</p>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex items-center gap-3">
+          <button onclick="resetDefaults()" class="px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-right text-xs"></i> Réinitialiser
+          </button>
+          <button onclick="window.print()" class="px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-black rounded-lg transition-all shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i> Imprimer / Exporter PDF
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- PRINT ONLY HEADER -->
+    <div class="hidden print:block p-8 border-b border-slate-300">
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="flex items-baseline">
+            <span class="text-4xl font-extrabold text-black tracking-tighter">light</span>
+            <span class="text-4xl font-normal text-slate-500 tracking-tighter">inderm</span>
+          </div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-600 font-medium">REGENERATIVE SKIN CARE</p>
+        </div>
+        <div class="text-right">
+          <h2 class="text-xl font-bold">Simulatif Commercial & Business Plan</h2>
+          <p class="text-sm text-slate-600" id="print-date"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT COLUMN: INPUTS & SELECTION (7 Cols) -->
+      <section class="lg:col-span-7 space-y-6 no-print">
+        
+        <!-- CARD 1: CATALOGUE & COMMANDES INSTITUT / DOMICILE -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bag-shopping text-slate-700"></i>
+              <h2 class="text-base font-bold text-slate-900 uppercase tracking-wider">1. Équipement & Revente Domicile</h2>
+            </div>
+            <span class="text-xs font-medium px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">Remise Partenaire B2B : -20%</span>
+          </div>
+
+          <div class="space-y-4 custom-scrollbar overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="text-slate-600 uppercase border-b border-slate-200">
+                  <th class="pb-2 font-semibold">Produit</th>
+                  <th class="pb-2 font-semibold text-center">Net HT (-20%)</th>
+                  <th class="pb-2 font-semibold text-center">Prix Public TTC</th>
+                  <th class="pb-2 font-semibold text-center w-24">Quantité</th>
+                  <th class="pb-2 font-semibold text-right">Total Net HT</th>
+                </tr>
+              </thead>
+              <tbody id="product-rows" class="divide-y divide-slate-100">
+                <!-- Dynamic Rows Generated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CARD 2: SOIN CABINE -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-spa text-slate-700"></i>
+              <h2 class="text-base font-bold text-slate-900 uppercase tracking-wider">2. Prestations Soin Cabine (Institut)</h2>
+            </div>
+            <span class="text-xs font-medium px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full">Protocoles Cabine</span>
+          </div>
+
+          <div class="space-y-3">
+            <!-- Option 1 : 3 min -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold text-slate-900">Soin 3 minutes</div>
+                <div class="text-xs text-slate-500">10,00 € TTC (Coût consommables : 1,50 € HT)</div>
+              </div>
+              <div class="w-24">
+                <input type="number" id="cabine_3min" min="0" value="10" oninput="calculateROI()" 
+                  class="w-full text-center bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-sm font-semibold focus:ring-2 focus:ring-black focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Option 2 : 6 min -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold text-slate-900">Soin 6 minutes</div>
+                <div class="text-xs text-slate-500">17,00 € TTC (Coût consommables : 3,00 € HT)</div>
+              </div>
+              <div class="w-24">
+                <input type="number" id="cabine_6min" min="0" value="15" oninput="calculateROI()" 
+                  class="w-full text-center bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-sm font-semibold focus:ring-2 focus:ring-black focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Option 3 : 9 min -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+              <div>
+                <div class="text-sm font-semibold text-slate-900">Soin 9 minutes</div>
+                <div class="text-xs text-slate-500">20,00 € TTC (Coût consommables : 4,50 € HT)</div>
+              </div>
+              <div class="w-24">
+                <input type="number" id="cabine_9min" min="0" value="5" oninput="calculateROI()" 
+                  class="w-full text-center bg-white border border-slate-300 rounded-lg py-1.5 px-2 text-sm font-semibold focus:ring-2 focus:ring-black focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3: OFFRES PROMOTIONNELLES & AVANTAGES PALIERS -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-gift text-pink-600"></i>
+              <h2 class="text-base font-bold text-slate-900 uppercase tracking-wider">3. Paliers & Avantages Partenaire</h2>
+            </div>
+            <span id="badge-franco" class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full">
+              Franco de Port : <span id="franco-status">Non atteint</span>
+            </span>
+          </div>
+
+          <!-- PALIERS INDICATOR -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- Franco Box -->
+            <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-800">Franco de Port (450 € HT)</p>
+                <p class="text-[11px] text-slate-500" id="franco-text">0 € / 450 €</p>
+              </div>
+              <div id="icon-franco" class="text-slate-400">
+                <i class="fa-regular fa-circle text-amber-500"></i>
+              </div>
+            </div>
+
+            <!-- Offre 12+1 Box -->
+            <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-800">Offre 12 + 1 Sérum Offert</p>
+                <p class="text-[11px] text-slate-500"><span id="serum-count-badge">0</span>/12 sérums achetés</p>
+              </div>
+              <div id="offered-serums-display" class="text-right">
+                <span class="text-xs font-bold text-pink-600">+<span id="offered-units">0</span> Offert(s)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- REVENTE SERUMS OFFERTS EN UNITES -->
+          <div class="p-4 bg-pink-50/50 rounded-xl border border-pink-100 space-y-3">
+            <div class="flex justify-between items-center">
+              <label class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate text-pink-600"></i>
+                Revente des sérums offerts (en nombre d'unités) :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="offered-resold-qty" min="0" value="0" onchange="calculateROI()" oninput="calculateROI()" class="w-16 p-1 text-center font-bold text-xs border border-pink-300 rounded-md focus:ring-pink-500 focus:border-pink-500">
+                <span class="text-xs text-slate-600 font-medium">/ <span id="max-offered-units">0</span> un.</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-500 italic">
+              *Indiquez combien de sérums reçus gratuitement vous prévoyez de revendre à 100% de marge nette.
+            </p>
+          </div>
+        </div>
+
+        <!-- CARD 4: PRIMES & CHALLENGES VENDEUR -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex justify-between items-center pb-4 mb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-award text-amber-500"></i>
+              <h2 class="text-base font-bold text-slate-900 uppercase tracking-wider">4. Challenge Vendeur / Équipe (Optionnel)</h2>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="enable-commission" onchange="calculateROI()" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-slate-900"></div>
+            </label>
+          </div>
+
+          <div id="commission-settings" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 opacity-50 pointer-events-none transition-all">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Prime Vente Appareil (+Pack)</label>
+              <div class="relative">
+                <input type="number" id="bonus-device" value="15" onchange="calculateROI()" oninput="calculateROI()" class="w-full p-2 pl-3 pr-8 text-xs border border-slate-300 rounded-lg">
+                <span class="absolute right-3 top-2 text-xs text-slate-400">€ / un.</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Prime Vente Sérum Offert</label>
+              <div class="relative">
+                <input type="number" id="bonus-serum" value="5" onchange="calculateROI()" oninput="calculateROI()" class="w-full p-2 pl-3 pr-8 text-xs border border-slate-300 rounded-lg">
+                <span class="absolute right-3 top-2 text-xs text-slate-400">€ / un.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: FINANCIAL KPI & SUMMARY (5 Cols) -->
+      <section class="lg:col-span-5 space-y-6">
+        
+        <!-- RÉSULTATS PRINCIPAUX : CHIFFRE D'AFFAIRES EN AVANT, MARGE EN PLUS PETIT -->
+        <div class="bg-black text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden print-shadow-none">
+          <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-chart-line text-white text-9xl"></i>
+          </div>
+
+          <div class="relative z-10 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Synthèse Financière Globale</span>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <i class="fa-solid fa-bolt mr-1"></i> Performance Mensuelle
+              </span>
+            </div>
+
+            <!-- KPI PRINCIPAL : CHIFFRE D'AFFAIRES TOTAL -->
+            <div>
+              <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-1">Chiffre d'Affaires Total (Revente & Prestations)</span>
+              <div class="flex items-baseline space-x-2">
+                <h1 id="kpi-ca-total" class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white">0,00 €</h1>
+                <span class="text-sm font-medium text-slate-400">TTC</span>
+              </div>
+              <div id="kpi-ca-ht-sub" class="text-xs text-slate-400 mt-1">Soit 0,00 € HT</div>
+            </div>
+
+            <!-- Séparateur discret -->
+            <div class="border-t border-slate-800 pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- KPI SECONDAIRE : MARGE NETTE -->
+              <div>
+                <span class="text-[11px] text-slate-400 uppercase font-medium block">Marge Nette HT</span>
+                <div id="kpi-marge-nette" class="text-xl sm:text-2xl font-bold text-emerald-400 mt-0.5">0,00 €</div>
+                <span id="kpi-taux-marge" class="text-[10px] text-slate-500">Taux : 0%</span>
+              </div>
+
+              <!-- Coût d'achat net -->
+              <div>
+                <span class="text-[11px] text-slate-400 uppercase font-medium block">Coût d'Achat Net</span>
+                <div id="kpi-achat-net-card" class="text-xl sm:text-2xl font-semibold text-white mt-0.5">0,00 €</div>
+                <span class="text-[10px] text-slate-500">Remise -20% incluse</span>
+              </div>
+
+              <!-- Coef Moyen -->
+              <div>
+                <span class="text-[11px] text-slate-400 uppercase font-medium block">Coefficient</span>
+                <div id="kpi-coef-moyen" class="text-xl sm:text-2xl font-semibold text-white mt-0.5">0.00x</div>
+                <span class="text-[10px] text-slate-500">Marge globale</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SYNTHÈSE DES CHIFFRES DÉTAILLÉE -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100 flex items-center justify-between">
+            <span>Détail Financier & Ventilation</span>
+            <i class="fa-solid fa-calculator text-slate-400"></i>
+          </h3>
+
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between items-center text-slate-600">
+              <span>CA Revente Produits TTC</span>
+              <span id="kpi-ca-ttc" class="font-semibold text-slate-900">0,00 €</span>
+            </div>
+            <div class="flex justify-between items-center text-slate-600">
+              <span>CA Prestations Soin Cabine TTC</span>
+              <span id="kpi-ca-cabine" class="font-semibold text-slate-900">0,00 €</span>
+            </div>
+            <div class="flex justify-between items-center text-pink-600 font-medium">
+              <span>+ Gain Revente Sérums Offerts HT</span>
+              <span id="kpi-gain-offerts" class="font-semibold">+ 0,00 €</span>
+            </div>
+            
+            <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-slate-600">
+              <span>Coût d'Achat Brut Produits HT</span>
+              <span id="kpi-achat-brut" class="font-semibold text-slate-900">0,00 €</span>
+            </div>
+            <div class="flex justify-between items-center text-emerald-600 font-medium">
+              <span>- Remise Partenaire (-20%) HT</span>
+              <span id="kpi-remise-val" class="font-semibold">- 0,00 €</span>
+            </div>
+            <div class="flex justify-between items-center text-slate-600">
+              <span>+ Coût Consommables Soins Cabine HT</span>
+              <span id="kpi-cout-cabine" class="font-semibold text-slate-900">0,00 €</span>
+            </div>
+            <div class="flex justify-between items-center text-slate-600">
+              <span>Frais de Port (Livraison)</span>
+              <span id="kpi-frais-port" class="font-semibold text-slate-900">0,00 €</span>
+            </div>
+
+            <div class="p-2.5 bg-slate-50 rounded-lg flex justify-between items-center font-bold text-slate-900 border border-slate-100">
+              <span>Investissement Global HT (Produits + Cabine)</span>
+              <span id="kpi-investissement-total">0,00 €</span>
+            </div>
+
+            <div id="kpi-row-commission" class="hidden justify-between items-center text-amber-600 font-medium pt-1">
+              <span>- Primes / Challenges Vendeurs Dépensées</span>
+              <span id="kpi-commissions-val">- 0,00 €</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECAPITULATIF COMMANDE APPAREILS / SERUMS -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Résumé des Volumes</h3>
+          <div class="grid grid-cols-2 gap-3 text-center text-xs">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="block text-slate-400 font-medium">Appareils Photostim.</span>
+              <span id="vol-devices" class="text-base font-bold text-slate-800">0 un.</span>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="block text-slate-400 font-medium">Sérums Total</span>
+              <span id="vol-serums" class="text-base font-bold text-slate-800">0 un.</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- FOOTER LEGAL -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-8 no-print">
+      <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-600 space-y-1">
+        <p class="font-medium">LIGHTINDERM Development — Application de Simulation Tarifaire Officielle</p>
+        <p>Les calculs de marges nettes sont basés sur une TVA standard de 20% sur la revente publique et les prestations. Document à usage professionnel.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // TARIF OFFICIEL LIGHTINDERM EXACT
+    const PRODUCTS = [
+      {
+        id: 'device',
+        name: 'Appareil Photostimulation Lightinderm',
+        subtitle: 'Inclus socle, câble & étui de transport',
+        img: 'https://placehold.co/40x40/111111/FFFFFF?text=LED',
+        priceHTBrut: 283.00,
+        priceHTNet: 226.40,
+        priceTTC: 385.00,
+        defaultQty: 2,
+        isDevice: true
+      },
+      {
+        id: 'serum-repair',
+        name: 'Sérum Repair (4 capsules / 1 mois)',
+        subtitle: 'Rides, Densité & Éclat',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=REP',
+        priceHTBrut: 53.10,
+        priceHTNet: 42.48,
+        priceTTC: 85.00,
+        defaultQty: 3,
+        isDevice: false
+      },
+      {
+        id: 'serum-lift',
+        name: 'Sérum Lift (4 capsules / 1 mois)',
+        subtitle: 'Fermeté, Relâchement, Ovale du visage',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=LFT',
+        priceHTBrut: 53.10,
+        priceHTNet: 42.48,
+        priceTTC: 85.00,
+        defaultQty: 3,
+        isDevice: false
+      },
+      {
+        id: 'serum-spotless',
+        name: 'Sérum Spotless (4 capsules / 1 mois)',
+        subtitle: 'Anti-taches & Hyperpigmentation',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=SPT',
+        priceHTBrut: 53.10,
+        priceHTNet: 42.48,
+        priceTTC: 85.00,
+        defaultQty: 2,
+        isDevice: false
+      },
+      {
+        id: 'serum-cica',
+        name: 'Sérum Cica / Post-Acte (4 capsules)',
+        subtitle: 'Apaisement, Post-Micro-needling & Laser',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=CCA',
+        priceHTBrut: 53.10,
+        priceHTNet: 42.48,
+        priceTTC: 85.00,
+        defaultQty: 2,
+        isDevice: false
+      },
+      {
+        id: 'serum-purity',
+        name: 'Sérum Purity (4 capsules / 1 mois)',
+        subtitle: 'Imperfections, Pores, Sébum',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=PUR',
+        priceHTBrut: 46.90,
+        priceHTNet: 37.52,
+        priceTTC: 75.00,
+        defaultQty: 2,
+        isDevice: false
+      },
+      {
+        id: 'serum-eye',
+        name: 'Sérum Eye (4 capsules / 1 mois)',
+        subtitle: 'Rides du contour des yeux & Cernes',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=EYE',
+        priceHTBrut: 46.90,
+        priceHTNet: 37.52,
+        priceTTC: 75.00,
+        defaultQty: 2,
+        isDevice: false
+      },
+      {
+        id: 'serum-brightening',
+        name: 'Sérum Brightening (4 capsules / 1 mois)',
+        subtitle: 'Éclat du teint & Uniformité',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=BRG',
+        priceHTBrut: 46.90,
+        priceHTNet: 37.52,
+        priceTTC: 75.00,
+        defaultQty: 1,
+        isDevice: false
+      },
+      {
+        id: 'serum-skinperfect',
+        name: 'Sérum Skin Perfect (4 capsules / 1 mois)',
+        subtitle: 'Hydratation profonde & Lissage',
+        img: 'https://placehold.co/40x40/E6007E/FFFFFF?text=SKP',
+        priceHTBrut: 34.40,
+        priceHTNet: 27.52,
+        priceTTC: 55.00,
+        defaultQty: 2,
+        isDevice: false
+      }
+    ];
+
+    // INITIALIZE APP & RENDER ROWS
+    function init() {
+      const container = document.getElementById('product-rows');
+      if (!container) return;
+      container.innerHTML = '';
+
+      PRODUCTS.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 flex items-center gap-3">
+            <img src="${p.img}" alt="${p.name}" class="w-8 h-8 rounded-lg border border-slate-200 object-cover shrink-0">
+            <div>
+              <p class="font-bold text-slate-900">${p.name}</p>
+              <p class="text-[10px] text-slate-400">${p.subtitle}</p>
+            </div>
+          </td>
+          <td class="py-3 text-center font-medium text-slate-700">${p.priceHTNet.toFixed(2)} €</td>
+          <td class="py-3 text-center text-slate-500">${p.priceTTC.toFixed(2)} €</td>
+          <td class="py-3 text-center">
+            <input type="number" id="qty-${p.id}" min="0" value="${p.defaultQty}" onchange="calculateROI()" oninput="calculateROI()" 
+              class="w-16 p-1.5 text-center font-bold border border-slate-300 rounded-lg focus:ring-slate-900 focus:border-slate-900">
+          </td>
+          <td class="py-3 text-right font-bold text-slate-900" id="subtotal-${p.id}">0,00 €</td>
+        `;
+        container.appendChild(tr);
+      });
+
+      // SET CURRENT DATE FOR PRINT
+      const printDateEl = document.getElementById('print-date');
+      if (printDateEl) {
+        printDateEl.innerText = 'Date : ' + new Date().toLocaleDateString('fr-FR');
+      }
+      
+      calculateROI();
+    }
+
+    // MAIN ROI CALCULATION FUNCTION
+    function calculateROI() {
+      let totalHTBrut = 0;
+      let totalHTNet = 0;
+      let totalResellTTC = 0;
+      let deviceQtyTotal = 0;
+      let serumQtyTotal = 0;
+
+      // Iterate Products
+      PRODUCTS.forEach(p => {
+        const input = document.getElementById(`qty-${p.id}`);
+        const qty = input ? (parseInt(input.value) || 0) : 0;
+        
+        const lineNetHT = qty * p.priceHTNet;
+        const lineBrutHT = qty * p.priceHTBrut;
+        const lineTTC = qty * p.priceTTC;
+
+        const subtotalEl = document.getElementById(`subtotal-${p.id}`);
+        if (subtotalEl) {
+          subtotalEl.innerText = lineNetHT.toFixed(2) + ' €';
+        }
+
+        totalHTBrut += lineBrutHT;
+        totalHTNet += lineNetHT;
+        totalResellTTC += lineTTC;
+
+        if (p.isDevice) {
+          deviceQtyTotal += qty;
+        } else {
+          serumQtyTotal += qty;
+        }
+      });
+
+      // OFFRE 12 + 1 SERUMS OFFERTS
+      const offeredSerumsUnits = Math.floor(serumQtyTotal / 12);
+      const serumCountBadge = document.getElementById('serum-count-badge');
+      const offeredUnitsEl = document.getElementById('offered-units');
+      const maxOfferedUnitsEl = document.getElementById('max-offered-units');
+
+      if (serumCountBadge) serumCountBadge.innerText = serumQtyTotal;
+      if (offeredUnitsEl) offeredUnitsEl.innerText = offeredSerumsUnits;
+      if (maxOfferedUnitsEl) maxOfferedUnitsEl.innerText = offeredSerumsUnits;
+
+      const offeredResoldInput = document.getElementById('offered-resold-qty');
+      let offeredResoldQty = offeredResoldInput ? (parseInt(offeredResoldInput.value) || 0) : 0;
+      if (offeredResoldQty > offeredSerumsUnits) {
+        offeredResoldQty = offeredSerumsUnits;
+        if (offeredResoldInput) offeredResoldInput.value = offeredSerumsUnits;
+      }
+
+      const avgSerumTTC = 75.00;
+      const gainOfferedSerumsHT = offeredResoldQty * (avgSerumTTC / 1.20);
+
+      // FRANCO DE PORT (450€ HT)
+      const isFranco = totalHTNet >= 450.00;
+      const shippingCost = (totalHTNet > 0 && !isFranco) ? 15.00 : 0.00;
+
+      const badgeFranco = document.getElementById('badge-franco');
+      const statusFranco = document.getElementById('franco-status');
+      const iconFranco = document.getElementById('icon-franco');
+      const francoText = document.getElementById('franco-text');
+
+      if (francoText) francoText.innerText = `${totalHTNet.toFixed(2)} € / 450 € HT`;
+
+      if (isFranco) {
+        if (statusFranco) statusFranco.innerText = 'ATTEINT (Gratuit)';
+        if (badgeFranco) badgeFranco.className = 'text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full';
+        if (iconFranco) iconFranco.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+      } else {
+        if (statusFranco) statusFranco.innerText = 'Non atteint (< 450€)';
+        if (badgeFranco) badgeFranco.className = 'text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full';
+        if (iconFranco) iconFranco.innerHTML = '<i class="fa-regular fa-circle text-amber-500"></i>';
+      }
+
+      // PRESTATIONS SOIN CABINE
+      const cabine3Input = document.getElementById('cabine_3min');
+      const cabine6Input = document.getElementById('cabine_6min');
+      const cabine9Input = document.getElementById('cabine_9min');
+
+      const cabine3 = cabine3Input ? (parseFloat(cabine3Input.value) || 0) : 0;
+      const cabine6 = cabine6Input ? (parseFloat(cabine6Input.value) || 0) : 0;
+      const cabine9 = cabine9Input ? (parseFloat(cabine9Input.value) || 0) : 0;
+
+      const caCabineTtc = (cabine3 * 10.00) + (cabine6 * 17.00) + (cabine9 * 20.00);
+      const coutCabineHt = (cabine3 * 1.50) + (cabine6 * 3.00) + (cabine9 * 4.50);
+
+      // COMMISSIONS / CHALLENGES
+      const enableCommCheckbox = document.getElementById('enable-commission');
+      const enableComm = enableCommCheckbox ? enableCommCheckbox.checked : false;
+      const commSettingsDiv = document.getElementById('commission-settings');
+      let totalCommissions = 0;
+
+      if (enableComm) {
+        if (commSettingsDiv) commSettingsDiv.classList.remove('opacity-50', 'pointer-events-none');
+        const bonusDeviceInput = document.getElementById('bonus-device');
+        const bonusSerumInput = document.getElementById('bonus-serum');
+        const bonusDevice = bonusDeviceInput ? (parseFloat(bonusDeviceInput.value) || 0) : 0;
+        const bonusSerum = bonusSerumInput ? (parseFloat(bonusSerumInput.value) || 0) : 0;
+
+        totalCommissions = (deviceQtyTotal * bonusDevice) + (offeredResoldQty * bonusSerum);
+        const rowComm = document.getElementById('kpi-row-commission');
+        const valComm = document.getElementById('kpi-commissions-val');
+        if (rowComm) {
+          rowComm.classList.remove('hidden');
+          rowComm.classList.add('flex');
+        }
+        if (valComm) valComm.innerText = '- ' + totalCommissions.toFixed(2) + ' €';
+      } else {
+        if (commSettingsDiv) commSettingsDiv.classList.add('opacity-50', 'pointer-events-none');
+        const rowComm = document.getElementById('kpi-row-commission');
+        if (rowComm) {
+          rowComm.classList.add('hidden');
+          rowComm.classList.remove('flex');
+        }
+      }
+
+      // FINAL KPI CALCULATIONS
+      const finalAchatNetHT = totalHTNet + shippingCost;
+      const totalResellHT = totalResellTTC / 1.20;
+      const caCabineHT = caCabineTtc / 1.20;
+
+      const caTotalTTC = totalResellTTC + caCabineTtc;
+      const caTotalHT = totalResellHT + caCabineHT;
+
+      const margeNetteHT = (caTotalHT + gainOfferedSerumsHT) - finalAchatNetHT - coutCabineHt - totalCommissions;
+      const tauxMarge = (caTotalHT > 0) ? (margeNetteHT / (caTotalHT + gainOfferedSerumsHT)) * 100 : 0;
+      const investissementTotalHT = finalAchatNetHT + coutCabineHt;
+      const coefMoyen = (investissementTotalHT > 0) ? caTotalTTC / investissementTotalHT : 0;
+
+      // RENDER KPIS
+      const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+      };
+
+      setText('kpi-ca-total', caTotalTTC.toFixed(2) + ' €');
+      setText('kpi-ca-ht-sub', `Soit ${caTotalHT.toFixed(2)} € HT`);
+
+      setText('kpi-marge-nette', margeNetteHT.toFixed(2) + ' €');
+      setText('kpi-taux-marge', `Taux : ${tauxMarge.toFixed(1)} %`);
+      setText('kpi-coef-moyen', coefMoyen.toFixed(2) + ' x');
+
+      setText('kpi-ca-ttc', totalResellTTC.toFixed(2) + ' €');
+      setText('kpi-ca-cabine', caCabineTtc.toFixed(2) + ' €');
+      setText('kpi-gain-offerts', '+ ' + gainOfferedSerumsHT.toFixed(2) + ' €');
+
+      setText('kpi-achat-brut', totalHTBrut.toFixed(2) + ' €');
+      setText('kpi-remise-val', '- ' + (totalHTBrut - totalHTNet).toFixed(2) + ' €');
+      setText('kpi-cout-cabine', coutCabineHt.toFixed(2) + ' €');
+      setText('kpi-frais-port', shippingCost > 0 ? shippingCost.toFixed(2) + ' €' : 'Offerts');
+      
+      setText('kpi-achat-net-card', finalAchatNetHT.toFixed(2) + ' €');
+      setText('kpi-investissement-total', investissementTotalHT.toFixed(2) + ' €');
+
+      setText('vol-devices', deviceQtyTotal + ' un.');
+      setText('vol-serums', serumQtyTotal + ' un.');
+    }
+
+    // RESET ALL TO DEFAULTS
+    function resetDefaults() {
+      PRODUCTS.forEach(p => {
+        const el = document.getElementById(`qty-${p.id}`);
+        if (el) el.value = p.defaultQty;
+      });
+      const c3 = document.getElementById('cabine_3min');
+      const c6 = document.getElementById('cabine_6min');
+      const c9 = document.getElementById('cabine_9min');
+      const resold = document.getElementById('offered-resold-qty');
+      const comm = document.getElementById('enable-commission');
+
+      if (c3) c3.value = 10;
+      if (c6) c6.value = 15;
+      if (c9) c9.value = 5;
+      if (resold) resold.value = 0;
+      if (comm) comm.checked = false;
+      calculateROI();
+    }
+
+    // ON LOAD
+    window.onload = function() {
+      init();
+    };
+  </script>
+</body>
+</html>
